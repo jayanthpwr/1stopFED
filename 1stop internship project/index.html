@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="vendor/fontawesome-free-5.15.4-web/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        .color-orangered {
+            color: orangered;
+        }
+
+        .icon-lg {
+            font-size: 50px;
+        }
+
+        .icon-sm {
+            font-size: 25px;
+        }
+
+        .remove-text-decoration {
+            text-decoration: none;
+        }
+
+        .remove-bullets {
+            list-style: none;
+        }
+    </style>
+    <title>Todotodo</title>
+</head>
+
+<body>
+    <nav class="nav navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a href="#" class="navbar-brand">
+                <img src="assets/logo.png" class="img-fluid" alt="logo" width="150">
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbar">
+                    <div class="navbar-nav ms-auto">
+
+                    </div>
+                </div>
+            </a>
+
+        </div>
+    </nav>
+
+    <div class="container p-5">
+        <div class="mb-3">
+            <button type="button" class="btn btn-outline-primary" onclick="showAddTaskModal()">Add Task</button>
+        </div>
+        <div class="d-flex justify-content-center">
+            <div class="col-sm-12 col-md-12 col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table">
+                            <thead class="text-center">
+                                <th>#</th>
+                                <th>Task/Description</th>
+                                <th>Responsible</th>
+                                <th>ETA</th>
+                                <th>Action</th>
+                            </thead>
+                            <tbody class="text-center" id="taskTableBody">
+                                <!-- createHtmlfromStorage() -->
+                                <td colspan="5">No tasks added yet</td>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addTaskModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="addTaskModalLabel" aria-hidden="true">
+        <form id="taskInputForm">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addTaskModalLabel">Add Task</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-1">
+                            <label for="addTaskTextArea" class="form-label">Task/Description</label>
+                            <textarea class="form-control" id="addTaskTextArea" name="taskDescription" rows="3"
+                                placeholder="Add your Task/Description"></textarea>
+                        </div>
+
+                        <div class="mb-1">
+                            <label for="addTaskResponsible" class="form-label">Responsible</label>
+                            <input type="text" class="form-control" id="addResponsiblePerson"
+                                name="taskResponsiblePerson" placeholder="Add the Responsible person's name">
+                        </div>
+                        <div class="mb-1">
+                            <label for="addTaskResponsible" class="form-label">Responsible</label>
+                            <input type="datetime-local" class="form-control" id="addETA" name="taskETA"
+                                placeholder="Click to add time">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="addTask()">Add Task</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal fade" id="updateTaskModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="addTaskModalLabel" aria-hidden="true">
+        <form id="taskUpdateForm">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editTaskModalLabel">Edit Task</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-1">
+                            <label for="addTaskTextArea" class="form-label">Edit Task Description</label>
+                            <textarea class="form-control" id="editTaskTextArea" name="taskDescription" rows="3"
+                                placeholder="Add your Task/Description"></textarea>
+                        </div>
+
+                        <div class="mb-1">
+                            <label for="addTaskResponsible" class="form-label">Responsible</label>
+                            <input type="text" class="form-control" id="editResponsiblePerson"
+                                name="taskResponsiblePerson" placeholder="Add the Responsible person's name">
+                        </div>
+                        <div class="mb-1">
+                            <label for="addTaskResponsible" class="form-label">Responsible</label>
+                            <input type="datetime-local" class="form-control" id="editETA" name="taskETA"
+                                placeholder="Click to add time">
+                        </div>
+                        <div>
+                            <input type="hidden" id="editIndex" name="taskIndex">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="updateTask()">Update Task</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="vendor/bootstrap/js/bootstrap.js"></script>
+    <script>
+        function addTask() {
+            console.log('Add Task Clicked')
+            $("#addTaskModal").modal('hide')
+            var dataArr = $("#taskInputForm").serializeArray();
+            var taskObject = new Object();
+            var storageObjectArr = [];
+            var storageObject = localStorage.getItem('taskStorage');
+            for (var i in dataArr) {
+                var name = dataArr[i]['name']
+                var value = dataArr[i]['value']
+                taskObject[name] = value
+            }
+            if (storageObject != null && storageObject != undefined && storageObject != '') {
+                storageObjectArr = JSON.parse(storageObject)
+                storageObjectArr.push(taskObject)
+            } else {
+                storageObjectArr.push(taskObject)
+            }
+
+            localStorage.setItem('taskStorage', JSON.stringify(storageObjectArr))
+            createHtmlfromStorage()
+            console.log(storageObjectArr)
+
+            console.log(taskObject);
+        }
+        function createHtmlfromStorage() {
+            var storageObjectArr = [];
+            var storageObject = localStorage.getItem('taskStorage');
+            var storageObjectArr = JSON.parse(storageObject)
+            var html = '';
+            console.log(storageObjectArr)
+            if (storageObject != null && storageObject != undefined && storageObject != '') {
+                if (storageObjectArr && storageObjectArr.length > 0)
+                    for (let i in storageObjectArr) {
+                        var date = new Date(storageObjectArr[i]['taskETA'])
+                        html = html + '<tr>'
+                            + '<td>' + (parseInt(i)) + 1 + '</td>' + '<td>' + storageObjectArr[i]['taskDescription'] + '</td>' +
+                            '<td>' + storageObjectArr[i]['taskResponsiblePerson'] + '</td>' + '<td>' + date.toUTCString() + '</td>'
+                            + '<td><i class="bi bi-check-circle-fill" onclick="markAsDone(' + i + ')"></i><i class="bi bi-pencil-square" onclick="editTask(' + i + ')"></i></td>'
+                            + '</tr>'
+                    }
+
+            } else {
+                html = '<tr><td colspan="5">No tasks added yet</td></tr>'
+            }
+            $('#taskTableBody').html(html)
+        }
+        function markAsDone(index) {
+            console.log(index)
+            var storageObjectArr = [];
+            var storageObject = localStorage.getItem('taskStorage');
+            // var storageObjectArr = JSON.parse(storageObject)
+            if (storageObject != null && storageObject != undefined && storageObject != '') {
+                storageObjectArr = JSON.parse(storageObject);
+                storageObjectArr.pop(index)
+            }
+            localStorage.setItem('taskStorage', JSON.stringify(storageObjectArr))
+            createHtmlfromStorage()
+        }
+        // function editTask(index) {
+        //     console.log(index)
+        //     var storageObjectArr = [];
+        //     var storageObject = localStorage.getItem('taskStorage');
+        //     if (storageObject != null && storageObject != undefined && storageObject != '') {
+        //         storageObjectArr = JSON.parse(storageObject);
+        //         $("#editTaskTextArea").val(storageObject[index]['taskDescription'])
+        //         $("#editResponsiblePerson").val(storageObject[index]['taskResponsiblePerson'])
+        //         $("#editETA").val(storageObject[index]['taskETA'])
+        //         $("#editIndex").val(index)
+        //         $("updateTaskModal").modal('show');
+        //     }
+        // }
+        function editTask(index) {
+            console.log("Edit Task function called with index:", index);
+            var storageObjectArr = [];
+            var storageObject = localStorage.getItem('taskStorage');
+            if (storageObject != null && storageObject != undefined && storageObject != '') {
+                storageObjectArr = JSON.parse(storageObject);
+                $("#editTaskTextArea").val(storageObjectArr[index]['taskDescription']);
+                $("#editResponsiblePerson").val(storageObjectArr[index]['taskResponsiblePerson']);
+                $("#editETA").val(storageObjectArr[index]['taskETA']);
+                $("#editIndex").val(index);
+                $("#updateTaskModal").modal('show');
+            }
+        }
+        function updateTask() {
+            $("#updateTaskModal").modal('hide');
+            var dataArr = $("#taskUpdateForm").serializeArray();
+            var taskObject = new Object();
+            var storageObjectArr = [];
+            var storageObject = localStorage.getItem('taskStorage');
+            for (var i in dataArr) {
+                var name = dataArr[i]['name']
+                var value = dataArr[i]['value']
+                taskObject[name] = value
+            }
+            if (storageObject != null && storageObject != undefined && storageObject != '') {
+                storageObjectArr = JSON.parse(storageObject)
+                storageObjectArr[taskObject['taskIndex']] = taskObject
+            }
+            localStorage.setItem('taskStorage', JSON.stringify(storageObjectArr))
+            createHtmlfromStorage()
+            console.log(storageObjectArr)
+            console.log(taskObject);
+
+        }
+        function showAddTaskModal() {
+            $("#addTaskModal").modal('show');
+
+        }
+    </script>
+    <footer class="bg-dark">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="container m-5">
+                        <img src="assets/logo.png" height="30px" class="bg-white" alt="">
+                        <div>
+                            <p class="text-white">Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias
+                                nemo ipsam quia rerum excepturi repudiandae, perferendis exercitationem consequuntur
+                                corrupti! Repudiandae?</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="container m-5">
+                        <p class="text-white fs-5">Quick Links</p>
+                        <ul class="remove-bullets remove-text-decoration">
+                            <li><a href="#" class="remove-text-decoration text-white">About Us</a></li>
+                            <li><a href="#" class="remove-text-decoration text-white">Contact Us</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="text-white text-center">
+                        <p>All rights reserved, 2023 at <a href="1stop.ai"
+                                class="remove-text-decoration text-white">1stop.ai</a></p>
+                    </div>
+                </div>
+    </footer>
+</body>
+
+</html>
